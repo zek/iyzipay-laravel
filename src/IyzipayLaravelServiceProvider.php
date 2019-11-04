@@ -2,9 +2,9 @@
 
 namespace Iyzico\IyzipayLaravel;
 
-use Iyzico\IyzipayLaravel\Commands\SubscriptionChargeCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\ServiceProvider;
+use Iyzico\IyzipayLaravel\Commands\SubscriptionChargeCommand;
 
 class IyzipayLaravelServiceProvider extends ServiceProvider
 {
@@ -17,32 +17,10 @@ class IyzipayLaravelServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->publishes([
-            __DIR__ . '/../config/config.php' => config_path('iyzipay.php')
+            __DIR__.'/../config/config.php' => config_path('iyzipay.php')
         ]);
 
-        if (! class_exists('AddBillableFields')) {
-            $this->publishes([
-                __DIR__.'/../database/migrations/add_billable_fields.stub' => database_path('migrations/'.date('Y_m_d_His', time()).'_add_billable_fields.php'),
-            ], 'migrations');
-        }
-
-        if (! class_exists('CreateCreditCardsTable')) {
-            $this->publishes([
-                __DIR__.'/../database/migrations/create_credit_cards_table.php.stub' => database_path('migrations/'.date('Y_m_d_His', time()).'_create_credit_cards_table.php'),
-            ], 'migrations');
-        }
-
-        if (! class_exists('CreateSubscriptionsTable')) {
-            $this->publishes([
-                __DIR__.'/../database/migrations/create_subscriptions_table.php.stub' => database_path('migrations/'.date('Y_m_d_His', time()).'_create_subscriptions_table.php'),
-            ], 'migrations');
-        }
-
-        if (! class_exists('CreateTransactionsTable')) {
-            $this->publishes([
-                __DIR__.'/../database/migrations/create_transactions_table.php.stub' => database_path('migrations/'.date('Y_m_d_His', time()).'_create_transactions_table.php'),
-            ], 'migrations');
-        }
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
         $this->app->booted(function () {
             $schedule = $this->app->make(Schedule::class);
@@ -64,7 +42,7 @@ class IyzipayLaravelServiceProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(
-            __DIR__ . '/../config/config.php',
+            __DIR__.'/../config/config.php',
             'iyzipay'
         );
 
